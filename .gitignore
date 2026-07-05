@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+managed/
+*.zkir
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.seed
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Windows Mark-of-the-Web sidecars (never commit)
+*:Zone.Identifier
