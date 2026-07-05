@@ -1,0 +1,228 @@
+pragma language_version >= 0.16 && <= 0.23;
+
+import CompactStandardLibrary;
+
+// ===== rwa_registry: RWAz object identity + ownership-as-credential =====
+//
+// WHAT THIS CONTRACT IS
+//   The RWAz branch rule (three-branch DIDz model, July 2026):
+//     THE OBJECT'S IDENTITY IS PERMANENT; OWNERSHIP IS A CREDENTIAL THAT MOVES.
+//   Think of a car: the VIN never changes for the life of the car, while the
+//   title transfers from owner to owner. Here:
+//     object id   = the VIN   (permanent, survives every sale)
+//     ownership   = the title (a transferable claim, one holder at a time)
+//     encumbrance = the lien  (a registered hold that blocks transfer)
+//   DIDz root owns WHO the owners are (identity, lifecycle, POL). This
+//   contract owns WHAT the object is and WHICH key currently holds title.
+//
+// PRIVACY MODEL
+//   Owners are key commitments (H("midnight:mm:pk:", secret)), never raw
+//   identities. The chain shows "object X is owned by commitment Y" and the
+//   provenance CHAIN LENGTH, but who Y is stays off-chain / in DIDz root.
+//   assert_i_own lets a holder prove ownership in zero knowledge.
+//
+// PROVENANCE
+//   Every transfer extends a rolling hash chain:
+//     new_head = H(old_head, new_owner_commitment)
+//   so the full custody history can be verified off-chain against one
+//   on-chain head, without publishing the list of past owners.
+//
+// WHO CALLS WHAT (call map for debugging)
+//   register_object      <- the first owner (mints the object id + first title)
+//   transfer_ownership   <- the CURRENT owner only (the title changes hands)
+//   assert_i_own         <- the owner, ZK proof for verifiers (read-only)
+//   add_encumbrance      <- the current owner (grants a lien to a lienholder)
+//   release_encumbrance  <- the LIENHOLDER only (releases their own lien)
+//   retire_object        <- the current owner (destroyed/scrapped; terminal)
+//   derive_public_key    <- SDKs, pure helper
+//
+// WHAT PLUGS IN (ecosystem breadcrumbs)
+//   DIDz root      -> owner commitments should anchor to registered DIDz ids
+//   scoped-grant   -> agents selling/managing objects act under grants
+//   SilentLedger   -> asset verification before orderbook listing
+//   equineProData / petProData -> animal identity uses the same pattern
+//   DownMan        -> estate flows retitle objects when an owner dies (POL)
+
+// ---------------------------------------------------------------------------
+// PUBLIC STATE
+// ---------------------------------------------------------------------------
+
+// Every object id ever registered (permanent — retirement does NOT remove it,
+// exactly like a VIN survives the scrapyard).
+export ledger registered_objects: Set<Bytes<32>>;
+
+// Objects that are RETIRED (destroyed/scrapped). Terminal: no transfers ever
+// again, but the identity + provenance stay readable for history.
+export ledger retired_objects: Set<Bytes<32>>;
+
+// object id -> hash of the object descriptor (make/model/serial documents,
+// stored off-chain; only the hash is committed here).
+export ledger object_descriptor_hash: Map<Bytes<32>, Bytes<32>>;
+
+// object id -> key commitment of the CURRENT owner (the title holder).
+export ledger current_owner: Map<Bytes<32>, Bytes<32>>;
+
+// object id -> key commitment of an active LIENHOLDER. Zero bytes = no lien.
+// v1 keeps exactly one encumbrance slot per object (upgrade path: a Set).
+export ledger active_encumbrance_holder: Map<Bytes<32>, Bytes<32>>;
+
+// object id -> rolling provenance hash head (see PROVENANCE above).
+export ledger provenance_head: Map<Bytes<32>, Bytes<32>>;
+
+// object id -> how many times the title has changed hands.
+export ledger transfer_count: Map<Bytes<32>, Uint<64>>;
+
+// ---------------------------------------------------------------------------
+// PRIVATE INPUTS
+// ---------------------------------------------------------------------------
+
+// The caller's secret key, provided locally by the prover; never on-chain.
+witness local_secret_key(): Bytes<32>;
+
+// ---------------------------------------------------------------------------
+// HELPERS
+// ---------------------------------------------------------------------------
+
+// Same key-derivation pattern as every midnight-modules contract.
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "midnight:mm:pk:"),
+    sk
+  ]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+// Extend the provenance chain: new head = H(domain, old head, new owner).
+circuit extend_provenance(old_head: Bytes<32>, new_owner: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([
+    pad(32, "rwaz:provenance:v1"),
+    old_head,
+    new_owner
+  ]);
+}
+
+// Shared guard: the object must exist, not be retired, and the caller must
+// be its current owner. Used by transfer / encumber / retire.
+circuit check_caller_owns_live_object(object_id: Bytes<32>): [] {
+  assert(registered_objects.member(object_id), "Object not registered");
+  assert(!retired_objects.member(object_id), "Object is retired");
+  assert(
+    disclose(caller_public_key() == current_owner.lookup(object_id)),
+    "Caller is not the current owner"
+  );
+}
+
+// ---------------------------------------------------------------------------
+// REGISTER: mint the object's permanent identity + first title
+// ---------------------------------------------------------------------------
+// Called by: the first owner (manufacturer, breeder, importer, ...).
+// The object id is caller-supplied (e.g. H(manufacturer, serial)) and must be
+// globally unique — like a VIN, it will NEVER change afterwards.
+export circuit register_object(
+  object_id: Bytes<32>,
+  descriptor_hash: Bytes<32>
+): [] {
+  const public_object_id = disclose(object_id);
+  assert(!registered_objects.member(public_object_id), "Object id already registered");
+
+  const first_owner = disclose(caller_public_key());
+  registered_objects.insert(public_object_id);
+  object_descriptor_hash.insert(public_object_id, disclose(descriptor_hash));
+  current_owner.insert(public_object_id, first_owner);
+  active_encumbrance_holder.insert(public_object_id, pad(32, ""));  // no lien yet
+  // Provenance starts at H(domain, zero, first_owner).
+  provenance_head.insert(
+    public_object_id,
+    extend_provenance(pad(32, ""), first_owner)
+  );
+  transfer_count.insert(public_object_id, 0);
+}
+
+// ---------------------------------------------------------------------------
+// TRANSFER: the title changes hands (the VIN does not)
+// ---------------------------------------------------------------------------
+// Called by: the CURRENT owner only.
+// Blocked while an encumbrance (lien) is active — like a real car title.
+export circuit transfer_ownership(
+  object_id: Bytes<32>,
+  new_owner_public_key: Bytes<32>
+): [] {
+  const public_object_id = disclose(object_id);
+  check_caller_owns_live_object(public_object_id);
+  assert(
+    active_encumbrance_holder.lookup(public_object_id) == pad(32, ""),
+    "Object is encumbered - release the lien before transfer"
+  );
+
+  const public_new_owner = disclose(new_owner_public_key);
+  current_owner.insert(public_object_id, public_new_owner);
+  provenance_head.insert(
+    public_object_id,
+    extend_provenance(provenance_head.lookup(public_object_id), public_new_owner)
+  );
+  transfer_count.insert(
+    public_object_id,
+    (transfer_count.lookup(public_object_id) + 1) as Uint<64>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// PROOF OF OWNERSHIP: read-only ZK check for verifiers
+// ---------------------------------------------------------------------------
+// Called by: the owner, when a verifier (marketplace, insurer, border control)
+// demands proof. The verifier learns ONE bit: "this caller holds title, and
+// the object is live." Not the owner's identity, not the history.
+export circuit assert_i_own(object_id: Bytes<32>): [] {
+  check_caller_owns_live_object(disclose(object_id));
+}
+
+// ---------------------------------------------------------------------------
+// ENCUMBRANCE: register / release a lien
+// ---------------------------------------------------------------------------
+// add: called by the CURRENT owner, naming the lienholder's key commitment
+//      (e.g. the bank financing the object). One active lien per object (v1).
+export circuit add_encumbrance(
+  object_id: Bytes<32>,
+  lienholder_public_key: Bytes<32>
+): [] {
+  const public_object_id = disclose(object_id);
+  check_caller_owns_live_object(public_object_id);
+  assert(
+    active_encumbrance_holder.lookup(public_object_id) == pad(32, ""),
+    "Object already has an active encumbrance"
+  );
+  const public_lienholder = disclose(lienholder_public_key);
+  assert(public_lienholder != pad(32, ""), "Lienholder key cannot be zero");
+  active_encumbrance_holder.insert(public_object_id, public_lienholder);
+}
+
+// release: called by the LIENHOLDER only (the bank signs off the loan).
+// The owner cannot un-lien their own object — that's the whole point.
+export circuit release_encumbrance(object_id: Bytes<32>): [] {
+  const public_object_id = disclose(object_id);
+  assert(registered_objects.member(public_object_id), "Object not registered");
+  assert(
+    disclose(caller_public_key() == active_encumbrance_holder.lookup(public_object_id)),
+    "Caller is not the active lienholder"
+  );
+  active_encumbrance_holder.insert(public_object_id, pad(32, ""));
+}
+
+// ---------------------------------------------------------------------------
+// RETIRE: the object is destroyed/scrapped (terminal state)
+// ---------------------------------------------------------------------------
+// Called by: the current owner. Identity + provenance remain readable forever;
+// transfers and new liens are blocked from here on. Mirrors the DIDz rule:
+// destruction is a STATUS on a permanent identity, not deletion.
+export circuit retire_object(object_id: Bytes<32>): [] {
+  const public_object_id = disclose(object_id);
+  check_caller_owns_live_object(public_object_id);
+  assert(
+    active_encumbrance_holder.lookup(public_object_id) == pad(32, ""),
+    "Cannot retire an encumbered object"
+  );
+  retired_objects.insert(public_object_id);
+}

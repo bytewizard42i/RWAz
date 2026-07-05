@@ -1,18 +1,20 @@
-# RWAz Contracts (planned)
+# RWAz Contracts
 
-Design-only. No `.compact` source committed yet. Every contract below must be
-validated via the Midnight MCP (`skipZk`) before source is added, per DIDzM
-conventions, and must reuse `midnight-modules` primitives rather than
-reimplementing them.
+> First contract landed July 5, 2026. Every contract is compile-validated on
+> the local `compactc` before commit (compile-first), and reuses
+> `midnight-modules` primitives rather than reimplementing them.
 
-## Planned modules
+## Live contracts (compiled on compactc 0.31.1, full ZK keys)
 
-- `title.compact` — `TitleCredential` issuance + ownership transfer circuit
-  (verifies current holder in ZK, issues new title, appends provenance, leaves
-  asset DIDz untouched).
-- `encumbrance.compact` — lien / insurance / inspection / warranty / escrow
-  credentials + transfer guard.
-- `provenance.compact` — append-only title/custody history bound to an asset DIDz.
+| Contract | What it is |
+|---|---|
+| `rwa_registry.compact` | **v1 of the branch thesis in one contract**: permanent object identity (the VIN), ownership as the credential that moves (the title), one encumbrance slot (the lien — lienholder-only release, transfers blocked while active), rolling provenance hash chain, ZK `assert_i_own`, terminal `retire_object` status. |
+
+## Planned follow-on modules (split out as they grow)
+
+- `encumbrance.compact` — multiple simultaneous liens / insurance /
+  inspection / warranty / escrow credentials (v1 has one slot).
+- `provenance.compact` — richer custody history (v1 keeps a rolling hash head).
 - `fractional.compact` — share registry over a single `RWADIDz`; prove
   "owns >= N shares" without revealing totals.
 - `custody.compact` — custodian / controller relationships and governed recovery.
@@ -31,3 +33,8 @@ From `midnight-modules`:
 
 Discover the current `compactc` / language version at session start (do not
 hardcode). Use a pragma range that includes the current language version.
+Current build: compactc 0.31.1, pragma `>= 0.16 && <= 0.23`.
+
+```bash
+compact compile contracts/rwa_registry.compact build/rwa-registry
+```
