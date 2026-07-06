@@ -81,8 +81,11 @@ products build on instead of reinventing ownership:
 
 ## Status
 
-Skeleton. Design-only. No Compact contracts yet. Validate any Compact via the
-Midnight MCP (`skipZk`) before committing source, per DIDzM conventions.
+**Implemented** (July 2026, compactc 0.31.1):
+- `rwa_registry.compact` — 6 circuits: register, transfer, assert_i_own, add/release encumbrance, retire
+- `rwa_credentials.compact` — 5 circuits: issue, revoke, prove, is_live, advance_epoch
+
+Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 
 ## Documents
 
