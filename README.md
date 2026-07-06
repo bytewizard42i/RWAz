@@ -97,3 +97,14 @@ Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 ## Author
 
 John M.P. Santi, EnterpriseZK Labs LLC. Part of the DIDz ecosystem.
+
+---
+
+## DIDz Ecosystem
+
+This project is part of the DIDz ecosystem — a suite of privacy-preserving
+identity, credential, and application tools built on Midnight Network.
+
+![DIDz Ecosystem Map](docs/DIDz-ecosystem-map.png)
+
+See the full ecosystem map above, or visit [didz.io](https://didz.io) for details.
