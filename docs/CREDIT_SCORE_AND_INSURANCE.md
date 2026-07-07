@@ -1,4 +1,4 @@
-# RWAz — Credit Score & Insurance Integration
+# RWAz, Credit Score & Insurance Integration
 
 **Date**: July 6, 2026
 **Status**: Design
@@ -14,7 +14,7 @@ insurable cap.
 ## 1. RWA entry as the insured object
 
 For CryptoSure everyday coverage (`CryptoSure.me`), the insured item is a **RWAz registry
-entry** — a real-world asset already committed on-chain (RWAz is the object/RWA
+entry**, a real-world asset already committed on-chain (RWAz is the object/RWA
 foundational branch; registry entries, not NFTs). This gives insurance a
 privacy-preserving handle on:
 
@@ -37,9 +37,9 @@ insurableCap = min(
 )
 ```
 
-Neither the raw score nor the raw appraised value is revealed — CryptoSure verifies band
+Neither the raw score nor the raw appraised value is revealed, CryptoSure verifies band
 booleans and reads the value **band**, then applies a public lookup (no in-circuit
-division — Compact quirk).
+division, Compact quirk).
 
 ## 3. Stewardship history feeds the score
 
@@ -75,4 +75,4 @@ consume:
 
 - Owner identity, raw score, and exact appraised value stay private.
 - CryptoSure learns only: "owner controls this asset," "score ≥ band threshold," and the
-  **value band** — enough to price and cap, nothing more.
+  **value band**, enough to price and cap, nothing more.

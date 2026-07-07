@@ -8,16 +8,16 @@
 
 | Contract | What it is |
 |---|---|
-| `rwa_registry.compact` | **v1 of the branch thesis in one contract**: permanent object identity (the VIN), ownership as the credential that moves (the title), one encumbrance slot (the lien — lienholder-only release, transfers blocked while active), rolling provenance hash chain, ZK `assert_i_own`, terminal `retire_object` status. |
+| `rwa_registry.compact` | **v1 of the branch thesis in one contract**: permanent object identity (the VIN), ownership as the credential that moves (the title), one encumbrance slot (the lien, lienholder-only release, transfers blocked while active), rolling provenance hash chain, ZK `assert_i_own`, terminal `retire_object` status. |
 
 ## Planned follow-on modules (split out as they grow)
 
-- `encumbrance.compact` — multiple simultaneous liens / insurance /
+- `encumbrance.compact`, multiple simultaneous liens / insurance /
   inspection / warranty / escrow credentials (v1 has one slot).
-- `provenance.compact` — richer custody history (v1 keeps a rolling hash head).
-- `fractional.compact` — share registry over a single `RWADIDz`; prove
+- `provenance.compact`, richer custody history (v1 keeps a rolling hash head).
+- `fractional.compact`, share registry over a single `RWADIDz`; prove
   "owns >= N shares" without revealing totals.
-- `custody.compact` — custodian / controller relationships and governed recovery.
+- `custody.compact`, custodian / controller relationships and governed recovery.
 
 ## Reused primitives (do not reimplement)
 

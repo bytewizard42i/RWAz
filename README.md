@@ -82,17 +82,17 @@ products build on instead of reinventing ownership:
 ## Status
 
 **Implemented** (July 2026, compactc 0.31.1):
-- `rwa_registry.compact` — 6 circuits: register, transfer, assert_i_own, add/release encumbrance, retire
-- `rwa_credentials.compact` — 5 circuits: issue, revoke, prove, is_live, advance_epoch
+- `rwa_registry.compact`, 6 circuits: register, transfer, assert_i_own, add/release encumbrance, retire
+- `rwa_credentials.compact`, 5 circuits: issue, revoke, prove, is_live, advance_epoch
 
 Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 
 ## Documents
 
-- `docs/ARCHITECTURE.md` — RWAz architecture
-- `docs/DIVISION_OF_LABOR.md` — exactly what belongs in DIDz root vs RWAz
-- `ROADMAP.md` — phased build plan
-- `contracts/README.md` — planned contracts
+- `docs/ARCHITECTURE.md`, RWAz architecture
+- `docs/DIVISION_OF_LABOR.md`, exactly what belongs in DIDz root vs RWAz
+- `ROADMAP.md`, phased build plan
+- `contracts/README.md`, planned contracts
 
 ## Author
 
@@ -102,7 +102,7 @@ John M.P. Santi, EnterpriseZK Labs LLC. Part of the DIDz ecosystem.
 
 ## DIDz Ecosystem
 
-This project is part of the DIDz ecosystem — a suite of privacy-preserving
+This project is part of the DIDz ecosystem, a suite of privacy-preserving
 identity, credential, and application tools built on Midnight Network.
 
 ![DIDz Ecosystem Map](docs/DIDz-ecosystem-map.png)
