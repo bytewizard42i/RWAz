@@ -41,7 +41,7 @@ import CompactStandardLibrary;
 //   scoped-grant   -> agents selling/managing objects act under grants
 //   SilentLedger   -> asset verification before orderbook listing
 //   equineProData / petProData -> animal identity uses the same pattern
-//   DownMan        -> estate flows retitle objects when an owner dies (POL)
+//   LegacyKey     -> estate flows retitle objects when an owner dies (POL)
 
 // ---------------------------------------------------------------------------
 // PUBLIC STATE

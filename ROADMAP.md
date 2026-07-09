@@ -43,4 +43,4 @@ registry and lifecycle status it reuses.
 
 ## Consumers to wire as phases land
 
-- `SilentLedger`, `equineProData`, `petProData`, `DownMan`, `safeHealthData`
+- `SilentLedger`, `equineProData`, `petProData`, `LegacyKey`, `safeHealthData`

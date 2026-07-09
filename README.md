@@ -75,7 +75,7 @@ products build on instead of reinventing ownership:
 
 - `SilentLedger` (asset verification, private orderbooks)
 - `equineProData`, `petProData` (animals as real-world assets)
-- `DownMan` (estate, inheritance, controlled asset migration)
+- `LegacyKey` (estate, inheritance, controlled asset migration)
 - `safeHealthData` (medical devices as objects)
 - tokenized-treasury and fractional-ownership use cases
 
