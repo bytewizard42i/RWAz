@@ -1,25 +1,14 @@
 # RWAz
 
-> **Midnight technical rule:** Follow the [DIDzM technical reference policy](../DIDzMonolith-docs/midnight/MIDNIGHT_TECHNICAL_REFERENCE_POLICY.md) for version-matched Compact syntax, SDK behavior, and evidence labels.
+**Real-World Asset and Object identity for the DIDz ecosystem, on Midnight.**
 
-**Real-world asset identity, ownership, encumbrance, and provenance for DIDzM, on Midnight.**
-
-> **DIDzM alignment, July 13, 2026:** RWAz is one of the four DIDzM engines.
-> DIDz supplies permanent subject identity and shared credential primitives. RWAz
-> owns transferable ownership, encumbrance, custody, fractional interests, and
-> provenance semantics. AgenticDID owns agent authority, and HelixCTW is the
-> data-layer engine. Implementation claims in this document are limited to the
-> compiler and structural-test evidence stated below; they do not imply audit or
-> production deployment.
-
-RWAz is the real-world-asset and object engine in the DIDzM architecture:
+RWAz is the third branch of the DIDz identity architecture. It is a peer to
+AgenticDID:
 
 ```text
-DIDzM
-├── DIDz .......... root identity, issuer trust, credentials, lifecycle
-├── AgenticDID .... agent identity, bounded authority, delegation
-├── RWAz .......... asset identity, ownership, encumbrance, provenance
-└── HelixCTW ...... private data orchestration and query (data layer)
+DIDz (root)  ......  universal identity + lifecycle status for every entity
+├── AgenticDID ...  the branch for autonomous agents (delegated authority)
+└── RWAz .........  the branch for objects and real-world assets (ownership)
 ```
 
 Where AgenticDID answers "what may this agent do," RWAz answers "what is this
@@ -86,7 +75,7 @@ products build on instead of reinventing ownership:
 
 - `SilentLedger` (asset verification, private orderbooks)
 - `equineProData`, `petProData` (animals as real-world assets)
-- `LegacyKey` (loose estate, inheritance, and recovery ideation; not an established RWAz consumer or subsystem)
+- `LegacyKey` (estate, inheritance, controlled asset migration)
 - `safeHealthData` (medical devices as objects)
 - tokenized-treasury and fractional-ownership use cases
 
@@ -135,7 +124,7 @@ The convergence of autonomous Ai, mass surveillance, and centralized identity da
 | **DIDz** | Root identity layer | Who you are, without revealing who you are |
 | **AgenticDID** | Agent authority layer | That an Ai agent is authorized, without revealing by whom |
 | **RWAz** | Object/asset identity layer | What an asset is and who owns it, without exposing ownership data |
-| **HelixCTW** | Data-layer engine | Query and manage private data, without exposing raw facts |
+| **HelixCTW** | Privacy-preserving data plane | Query and manage private data, without exposing raw facts |
 
 **This project** is part of the DIDzMonolith ecosystem, built on these four engines. The existential threat is real. The architecture is ready.
 
@@ -147,8 +136,8 @@ This project is part of the DIDzMonolith ecosystem and inherits the four-engine 
 
 **Applicable frameworks**: SOC 2, ISO 27001, PCI DSS, HIPAA, MiCA — depending on product function and jurisdiction.
 
-**Full compliance deep dive**: [`DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md`](../DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md) — engine-by-engine control mappings, product compliance matrix, and implementation roadmap.
+**Full compliance deep dive**: [`DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md`](../../DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md) — engine-by-engine control mappings, product compliance matrix, and implementation roadmap.
 
-**MiCA regulatory notes**: [`DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md`](../DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md) — EU crypto-asset regulation product-by-product matrix.
+**MiCA regulatory notes**: [`DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md`](../../DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md) — EU crypto-asset regulation product-by-product matrix.
 
 ---

@@ -1,26 +1,15 @@
 # RWAz Architecture
 
-> **Midnight technical rule:** Validate Compact and SDK statements against the [DIDzM technical reference policy](../../DIDzMonolith-docs/midnight/MIDNIGHT_TECHNICAL_REFERENCE_POLICY.md).
-
-> **Canonical alignment, July 13, 2026:** RWAz is the object and real-world-asset
-> engine in the four-engine DIDzM system. This document defines its intended
-> boundaries and invariants. Items under open questions remain design work. A
-> compiler result or structural interface test is not equivalent to security
-> review, end-to-end behavior, testnet deployment, or production readiness.
-
 ## Position in the DIDz stack
 
 ```text
-DIDzM
-├── DIDz .......... root identity, issuer trust, credentials, lifecycle
-├── AgenticDID .... agent identity, bounded authority, delegation
-├── RWAz .......... asset identity, ownership, encumbrance, provenance
-└── HelixCTW ...... private data orchestration and query (data layer)
+DIDz Root Protocol  ........  universal identity + lifecycle status
+├── AgenticDID .............  autonomous agents: scoped/attenuated authority
+└── RWAz .................... objects + real-world assets: ownership + provenance
 ```
 
-RWAz consumes DIDz root registries and shared modules, then adds the ownership
-and provenance semantics that belong to this engine. It does not redefine DIDz,
-AgenticDID, or HelixCTW.
+RWAz is a branch, not a fork. It reuses the DIDz root registries and adds an
+ownership and provenance layer on top.
 
 ## Core separation
 
