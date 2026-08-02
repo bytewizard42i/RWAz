@@ -59,6 +59,19 @@ the spec says so explicitly.
 **Specification:** `FORMAL_SPECS_W3C_DIF/rwaz-protocol-v0.1-draft.md`
 in the RWAz repository. **License:** Apache 2.0.
 
+**Implementation status (updated August 2, 2026).** The RWAz registry is no
+longer design-only: `rwa_registry` (permanent object identity, ownership as
+a movable title, single-lien encumbrance, rolling provenance hash chain)
+compiles on the current Midnight toolchain and was the first contract of
+our ecosystem deployed to a live Midnight network — object registration
+and zero-knowledge proof-of-ownership are chain-confirmed with real
+proofs, served through the DIDz kernel's ObjectProvider seam. Cross-pillar
+binding is demonstrated: one holder key commitment controls both a
+registered identity and a registered asset title. Our test methodology now
+includes an adversarial population ("TestTown") whose asset dossiers carry
+independently confirmable paper trails — including deliberate impostors
+that admission and attestation ceremonies must refuse.
+
 Respectfully,
 
 **John M.P. Santi**
