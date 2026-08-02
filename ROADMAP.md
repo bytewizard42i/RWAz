@@ -3,13 +3,23 @@
 Phased build. Each phase depends on the DIDz root layer providing the entity
 registry and lifecycle status it reuses.
 
-## Phase 0, Design (current)
+## Phase 0, Design ✅ (complete)
 
 - README, architecture, division-of-labor docs
 - Align with `DIDZ_AGENTICDID_IMPLEMENTATION_PLAN.md` (three-branch model)
-- No Compact contracts yet
 
-## Phase 1, Ownership core
+## Phase 1, Ownership core ✅ (complete — TestWired Aug 2, 2026)
+
+> `rwa_registry.compact` (6 circuits) + `rwa_credentials.compact`
+> (5 circuits) compile clean on compactc 0.31.1 (7/7 structural tests,
+> full ZK keys). `rwa_registry` was the FIRST DIDzMonolith contract ever
+> deployed to a live Midnight network: localnet deploy + `register_object`
+> + ZK `assert_i_own`, all chain-confirmed with real proofs, served
+> through the didz-kernel ObjectProvider seam (`@didz/adapter-midnight`).
+> Stage: TestWired (localnet) — see
+> `DIDzMonolith-docs/standards/BUILD_STAGES.md`.
+
+## Phase 1 (original scope, for reference)
 
 - `RWADIDz` / `ObjectDIDz` entity types confirmed in DIDz root
 - `TitleCredential` (current owner, transferable)
