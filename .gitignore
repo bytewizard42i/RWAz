@@ -27,3 +27,6 @@ Thumbs.db
 
 # Windows Mark-of-the-Web sidecars (never commit)
 *:Zone.Identifier
+
+# Full ZK key builds (prover keys are large binaries — never commit; regenerate with: compact compile contracts/rwa_registry.compact build-zk/rwa-registry)
+build-zk/
