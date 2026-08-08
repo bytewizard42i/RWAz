@@ -32,6 +32,26 @@ Provenance       = append-only  (title/custody history) -> lives in RWAz
 Lifecycle status = mutable      (active/sold/destroyed)  -> lives in DIDz root
 ```
 
+## Planned NIGHTGATE adapter boundary
+
+The planned `@didz/adapter-nightgate` may translate an already-authorized RWAz
+operation to the pinned NIGHTGATE CAP/OData service and carry the resulting
+evidence back through existing kernel seams. NIGHTGATE-MCP may expose a curated
+Ai tool surface over that service.
+
+Neither component is an engine, registry, title authority, ownership authority,
+or policy engine. RWAz contracts remain authoritative for ownership,
+encumbrance, custody, and provenance. A NIGHTGATE bearer grant is a transport
+credential only; it is not a title credential, ownership proof, DID control
+proof, or AgenticDID authorization proof.
+
+OData projections must apply row-level authorization before disclosure. Never
+place wallet seeds, private keys, bearer tokens, title documents, private
+evidence, or ZK witnesses in source, examples, fixtures, logs, telemetry, or
+MCP prompts. Treat public contract keys, arguments, disclosed fields, and
+transaction metadata as public ledger inputs unless a verified proof path
+establishes otherwise.
+
 ## Registries RWAz adds
 
 ```text

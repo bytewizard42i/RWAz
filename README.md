@@ -95,6 +95,20 @@ credential registry, merkle membership, commitment/nullifier, recovery). RWAz
 imports them and adds only the ownership and provenance layer. This prevents three
 drifting copies of the same registry across DIDz, AgenticDID, and RWAz.
 
+### Planned NIGHTGATE service edge
+
+NIGHTGATE may transport approved RWAz contract calls, project selected OData
+fields, anchor document commitments, and request ownership or encumbrance
+predicates. It is an adapter boundary, not a registry, title authority,
+ownership authority, fifth DIDzM engine, or source of RWAz protocol semantics.
+The RWAz contracts and verified provenance chain remain authoritative.
+
+NIGHTGATE-MCP is a planned Ai tool bridge. Its bearer grants authorize
+transport requests only and do not prove ownership, title, custody, DID
+control, or AgenticDID authority. Never place title documents, wallet seeds,
+bearer tokens, private evidence, or ZK witnesses in repository files,
+examples, fixtures, logs, telemetry, or tool prompts.
+
 ## Entity types RWAz covers
 
 ```text
@@ -138,6 +152,7 @@ Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 
 - `docs/ARCHITECTURE.md`, RWAz architecture
 - `docs/DIVISION_OF_LABOR.md`, exactly what belongs in DIDz root vs RWAz
+- `docs/AUTHORITY_TIERS_DATA_ACCESS.md`, authority-tiered data access and the planned NIGHTGATE projection boundary
 - `ROADMAP.md`, phased build plan
 - `contracts/README.md`, planned contracts
 

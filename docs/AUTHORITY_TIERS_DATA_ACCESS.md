@@ -27,5 +27,20 @@ compliance history. The query is identical; only the SELECT changes.
 hashes and owner commitments. Tiered access is a gateway GATE-step refinement,
 not a contract change.
 
+## NIGHTGATE projection boundary
+
+NIGHTGATE may serve as a planned CAP/OData transport for a projection that the
+HelixCTW GATE step has already authorized. It must not infer access from the
+mere possession of a NIGHTGATE bearer grant. That grant authorizes transport
+and budget only; DIDz identity, AgenticDID scoped authority, trusted issuer
+credentials, and RWAz state still determine what the caller may see or do.
+
+NIGHTGATE and NIGHTGATE-MCP are not a fifth engine, a data authority, a title
+authority, or proof of ownership. The projection must preserve row-level
+authorization and return only fields allowed by the verified tier. Never place
+wallet seeds, private keys, bearer tokens, title documents, private evidence,
+or ZK witnesses in repository files, examples, fixtures, logs, telemetry, or
+MCP prompts.
+
 **Canonical specification:**
 `helixctw/docs/AUTHORITY_TIERS_DATA_ACCESS.md`
