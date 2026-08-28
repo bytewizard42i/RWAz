@@ -1,5 +1,9 @@
 # RWAz
 
+> **🏛️ DIDzM Pillar Repo** — This repository stands alone, but it is one of the three pillars of the [DIDzMonolith](https://github.com/bytewizard42i/DIDzMonolith) ecosystem — **[DIDz](https://github.com/bytewizard42i/didz-dapp-system)** (root identity) · **[AgenticDID](https://github.com/bytewizard42i/AgenticDID_io_me)** (agent authority) · **RWAz** (asset identity, this repo) — sharing one kernel (didz-kernel), one conformance suite, and one philosophy: *prove without revealing*, on Midnight.
+>
+> **Already real at the kernel seam:** RWAz's `rwa_registry` contract is **deployed on a local Midnight network** (single-tx deploy) alongside DIDz's `DIDzRegistry`, backing the didz-kernel's `ObjectProvider` seam with real ZK transactions in the TestWired stage.
+
 > **Midnight technical rule:** In the DIDzMonolith checkout, follow the [DIDzM sources-of-truth policy](../DIDzMonolith-docs/midnight/MIDNIGHT_SOURCES_OF_TRUTH.md) for source routing and the [current Midnight schema](../DIDzMonolith-docs/midnight/MIDNIGHT_CURRENT_SCHEMA.md) for architecture, integration, and evidence labels.
 
 **Real-world asset identity, ownership, encumbrance, and provenance for DIDzM, on Midnight.**
