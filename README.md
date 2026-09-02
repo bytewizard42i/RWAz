@@ -8,6 +8,8 @@
 
 **Real-world asset identity, ownership, encumbrance, and provenance for DIDzM, on Midnight.**
 
+> **On the name:** the term *RWAz* — real-world-asset tokenized asset registries — was coined by **Stephen Feik, Esq.** in a LinkedIn conversation with the project's founder. Credit travels with the term.
+
 > **DIDzM alignment, July 13, 2026:** RWAz is one of the four DIDzM engines.
 > DIDz supplies permanent subject identity and shared credential primitives. RWAz
 > owns transferable ownership, encumbrance, custody, fractional interests, and
