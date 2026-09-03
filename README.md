@@ -66,6 +66,13 @@ answer itself. RWAz extends this to **assets and objects**: prove you own it,
 prove it's encumbered, prove its provenance — without exposing ownership records,
 titles, or transaction history.
 
+**Design principle — authority is a receipt, not a session.** Title is not a
+row that says "owner = X". Every transfer, encumbrance, and release is a signed
+receipt in the asset's history, and a *refused* transfer leaves the same receipt
+as a completed one. Provenance is the chain of receipts, not the current state.
+Canon:
+[AUTHORITY_IS_A_RECEIPT.md](https://github.com/bytewizard42i/DIDzMonolith/blob/main/DIDzMonolith-docs/standards/AUTHORITY_IS_A_RECEIPT.md).
+
 ---
 
 ## The one rule RWAz inherits from DIDz
