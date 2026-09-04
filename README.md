@@ -166,6 +166,7 @@ Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 - `docs/ARCHITECTURE.md`, RWAz architecture
 - `docs/DIVISION_OF_LABOR.md`, exactly what belongs in DIDz root vs RWAz
 - `docs/AUTHORITY_TIERS_DATA_ACCESS.md`, authority-tiered data access and the planned NIGHTGATE projection boundary
+- `docs/REGULATED_TOKEN_STANDARDS_CIP-0113_ERC-3643.md`, RWAz scored against the regulator checklist behind ERC-3643 (T-REX) and Cardano's CIP-0113; Phase 5 spec seed
 - `ROADMAP.md`, phased build plan
 - `contracts/README.md`, planned contracts
 
@@ -213,6 +214,8 @@ This project is part of the DIDzMonolith ecosystem and inherits the four-engine 
 
 **Full compliance deep dive**: [`DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md`](../DIDzMonolith-docs/compliance/REGULATORY_COMPLIANCE_DEEP_DIVE.md) — engine-by-engine control mappings, product compliance matrix, and implementation roadmap.
 
-**MiCA regulatory notes**: [`DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md`](../DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md) — EU crypto-asset regulation product-by-product matrix.
+**MiCA regulatory notes**: [`DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md`](../DIDzMonolith-docs/compliance/MICA_REGULATORY_NOTES.md) — EU crypto-asset regulation product-by-product matrix. Note: tokenized *securities* (most RWAz targets) are MiFID II financial instruments and fall outside MiCA.
+
+**Regulated token standards**: [`DIDzMonolith-docs/compliance/RWA_CIP-0113_vs_ERC-3643_DIDZM_IMPLICATIONS.md`](../DIDzMonolith-docs/compliance/RWA_CIP-0113_vs_ERC-3643_DIDZM_IMPLICATIONS.md) — what ERC-3643 (T-REX) and Cardano's CIP-0113 do, what regulators in Argentina / Spain / Brazil require of a registry, and how RWAz maps to it.
 
 ---

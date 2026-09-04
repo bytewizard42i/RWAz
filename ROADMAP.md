@@ -47,9 +47,34 @@ registry and lifecycle status it reuses.
 
 ## Phase 5, Regulatory profiles
 
+> Expanded Sept 4, 2026 from the regulator checklist in the Blockenfy / Cardano
+> Ambassadors paper *CIP-0113 vs ERC-3643*. Spec seed and gap scoring:
+> `docs/REGULATED_TOKEN_STANDARDS_CIP-0113_ERC-3643.md`. Design only until the
+> circuits compile and are `skipZk`-validated.
+
 - Credential schemas per asset class (vehicles, real estate, securities-style
   tokenized RWAs)
 - Selective-disclosure audit access for regulators
+- Per-asset **policy set** registered at `register_object` (pluggable, like
+  ERC-3643 modules / CIP-0113 sub-standards), not hard-coded asserts
+- Authority-imposed controls a securities regulator expects:
+  - recipient KYC gate (consumes a KYCz assertion; RWAz stores no KYC facts)
+  - AML denylist / `freeze_holder` / `unfreeze_holder` (issuer or regulator key)
+  - `force_transfer` for court orders, inheritance, lost wallet (registrar +
+    regulator cosign; provenance tagged `forced`) — LegacyKey consumer
+  - `pause_asset` / `unpause_asset` (corporate events, supervision)
+  - jurisdictional allow/deny policy (KYCz `country_allowed` predicate)
+  - lock-up until epoch (pre-construction real estate)
+- **Regulator co-signature as an Action Receipt signer**, specified against
+  `DIDzMonolith-docs/standards/RECEIPT_AUTHORITY_SPEC.md`; refusal produces the
+  same receipt shape. This was the single feature that unlocked ERIR adoption in
+  Spain for ERC-3643 and is absent from CIP-0113.
+- Registrar role (ERIR-equivalent) with its own keys and receipts; nominative
+  ownership satisfied by registrar-held commitment→DIDz mapping under
+  selective disclosure
+- Jurisdiction profile docs: Argentina (CNV Title XXII sandbox, technology
+  neutral, no ERIR) first; Spain (CNMV/ERIR, MiFID II) as the compliance-plane
+  play, not the token
 
 ## Consumers to wire as phases land
 
