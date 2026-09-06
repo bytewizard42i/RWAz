@@ -219,3 +219,10 @@ This project is part of the DIDzMonolith ecosystem and inherits the four-engine 
 **Regulated token standards**: [`DIDzMonolith-docs/compliance/RWA_CIP-0113_vs_ERC-3643_DIDZM_IMPLICATIONS.md`](../DIDzMonolith-docs/compliance/RWA_CIP-0113_vs_ERC-3643_DIDZM_IMPLICATIONS.md) — what ERC-3643 (T-REX) and Cardano's CIP-0113 do, what regulators in Argentina / Spain / Brazil require of a registry, and how RWAz maps to it.
 
 ---
+
+
+## Shared sign-in options
+
+See [the shared sign-in module pointer](SIGN_IN_SELECTIONS.md) for reusable choice
+configuration and this repository's integration boundaries. This documentation
+pointer does not activate authentication.
