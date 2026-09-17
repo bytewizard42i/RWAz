@@ -10,6 +10,12 @@
 |---|---|
 | `rwa_registry.compact` | **v1 of the branch thesis in one contract**: permanent object identity (the VIN), ownership as the credential that moves (the title), one encumbrance slot (the lien, lienholder-only release, transfers blocked while active), rolling provenance hash chain, ZK `assert_i_own`, terminal `retire_object` status. |
 
+## Phase-5 policy contracts (compiled on compactc 0.31.1, full ZK keys, tested on simulated chain)
+
+| Contract | What it is |
+|---|---|
+| `accredited_transfer.compact` | **Recipient-eligibility policy**: `onboard` verifies a KYCz-signed `KycAssertion` in-circuit (via `include` of `midnight-modules/signed-credential`), inserts the caller into a `HistoricMerkleTree` accredited set; `assert_recipient_accredited` is the guard a gated transfer calls; issuer-managed `allowed_countries`; `freeze_holder`/`unfreeze_holder`. Ported from Brick Towers `midnight-rwa` (Erick Romero). RWAz stores no KYC facts. Tests: `tests/accredited_transfer.*`. |
+
 ## Planned follow-on modules (split out as they grow)
 
 - `encumbrance.compact`, multiple simultaneous liens / insurance /
@@ -23,6 +29,8 @@
 
 From `midnight-modules`:
 
+- `signed-credential` (in-circuit Schnorr/Jubjub verification of issuer-signed
+  credentials; used by `accredited_transfer` to consume KYCz assertions)
 - entity registry + lifecycle status (via DIDz root)
 - `merkle-membership` (ownership set membership)
 - `commitment-nullifier` (one-time transfer / anti-replay)

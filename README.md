@@ -161,6 +161,33 @@ products build on instead of reinventing ownership:
 
 Compiles clean with full ZK key generation. Privacy-first per ruling #0.
 
+**Implemented, Phase 5 first cut** (Sept 17, 2026, compactc 0.31.1, full ZK keys, 6 circuits):
+- `accredited_transfer.compact`, recipient-eligibility policy: `onboard` consumes a
+  KYCz-signed `KycAssertion` verified **in-circuit** (shared `midnight-modules/signed-credential`),
+  `HistoricMerkleTree` accredited set, `assert_recipient_accredited` guard, issuer-managed
+  country allow-list, `freeze_holder`/`unfreeze_holder`. Ported from Brick Towers
+  `midnight-rwa` and bent to the RWAz rule that RWAz stores no KYC facts.
+  Tested end-to-end with the real KYCz IDP (`../KYCz/src/idp`) signing assertions:
+  `node --test tests/*.cjs tests/*.mjs` -> 19/19 (simulated chain, not testnet).
+
+### Brick Towers cross-pollination plan (Sept 17, 2026)
+
+Source: Erick Romero's `BrickTowers/midnight-rwa` (reference clone `../midnight-rwa-johns-copy`;
+chop plan `../DIDzMonolith-docs/midnight/BRICK_TOWERS_RWA_CHOP_PLAN.md`). Attribution travels
+with every ported piece.
+
+- [x] Shared Schnorr/Jubjub primitive -> `midnight-modules/modules/signed-credential` (full ZK keys)
+- [x] `accredited_transfer.compact` (above), full ZK keys
+- [x] Structural + 9-case simulator tests (`tests/accredited_transfer.{test.cjs,sim.test.mjs}`):
+      rogue IDP, not-adult, disallowed country, stranger, frozen holder all rejected
+- [ ] Decide composition: `rwa_registry_gated` variant that includes the guard vs. two proofs per tx
+      (Compact has no cross-contract calls)
+- [ ] Bind `KycAssertion.subject_commitment` to the caller key (Field/Bytes<32> bridge with KYCz IDP;
+      tests currently pass `0n`)
+- [ ] Enforce `issued_at` freshness policy
+- [ ] Regulator co-signature on `freeze_holder` / `force_transfer` per `RECEIPT_AUTHORITY_SPEC.md`
+- Not ported: tBTC/tHF liquidity pool, quiz gate, minimum-deposit "wealth" check, Brick Towers UI
+
 ## Documents
 
 - `docs/ARCHITECTURE.md`, RWAz architecture

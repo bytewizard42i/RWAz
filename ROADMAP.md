@@ -52,6 +52,14 @@ registry and lifecycle status it reuses.
 > `docs/REGULATED_TOKEN_STANDARDS_CIP-0113_ERC-3643.md`. Design only until the
 > circuits compile and are `skipZk`-validated.
 
+> **Sept 17, 2026:** first Phase-5 code landed,
+> `contracts/accredited_transfer.compact` (full ZK keys, 19 passing tests on a
+> simulated chain with the real KYCz IDP signing). It ports the Brick Towers
+> `midnight-rwa` onboarding/accreditation pattern and consumes a KYCz-signed
+> assertion verified in-circuit via `midnight-modules/signed-credential`.
+> Covers the recipient KYC gate, jurisdictional allow-list and `freeze_holder` /
+> `unfreeze_holder` items below. See README "Brick Towers cross-pollination plan".
+
 - Credential schemas per asset class (vehicles, real estate, securities-style
   tokenized RWAs)
 - Selective-disclosure audit access for regulators

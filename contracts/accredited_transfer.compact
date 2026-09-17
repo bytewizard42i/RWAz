@@ -1,0 +1,170 @@
+pragma language_version >= 0.22 && <= 0.23;
+
+// ===== accredited_transfer: RWAz Phase-5 recipient-eligibility policy (SKELETON) =====
+//
+// WHAT THIS CONTRACT IS
+//   The "only eligible holders may receive this asset" rule that securities-style
+//   RWAs need (ERC-3643 identity registry / CIP-0113 sub-standard equivalent).
+//   It is a POLICY MODULE beside rwa_registry, not a replacement: rwa_registry
+//   still owns object identity, title and liens. This module owns the
+//   eligibility SET and the guard a gated transfer must pass.
+//
+// LINEAGE
+//   Onboarding + HistoricMerkleTree accreditation set ported from Brick Towers
+//   `midnight-rwa` (Erick Romero, Copyright 2025 Brick Towers; local reference
+//   clone ../../midnight-rwa-johns-copy, circuits `onboard`, `isAuthorizedSend`).
+//   Chop plan: ../../DIDzMonolith-docs/midnight/BRICK_TOWERS_RWA_CHOP_PLAN.md
+//
+// WHAT CHANGED FROM BRICK TOWERS (the DIDzM bend)
+//   * RWAz stores NO KYC facts. Brick Towers verified the raw passport inside the
+//     RWA contract. Here the holder presents a KYCz-issued ASSERTION (already the
+//     result of passport + liveness checks) signed by the KYCz IDP. Nationality is
+//     the only field this contract reads, and only to compare against the policy.
+//   * Country allow-list is a ledger Set managed by the issuer, not two hard-coded
+//     constructor constants.
+//   * Regulator controls from ROADMAP Phase 5 stubbed: freeze / unfreeze holder.
+//   * Quiz + minimum-deposit gates NOT ported (demo scaffolding; a "suitability"
+//     assertion belongs in KYCz if ever needed).
+//
+// PRIVACY MODEL
+//   Holders are key commitments (same derivation as rwa_registry). The set is a
+//   HistoricMerkleTree so a recipient proves "I am SOME accredited holder" via a
+//   Merkle path witness without revealing which leaf. The chain learns set size
+//   and freeze events, not identities.
+//
+// COMPOSITION NOTE
+//   Compact has no cross-contract calls. To gate rwa_registry.transfer_ownership,
+//   either (a) include this file into a `rwa_registry_gated` variant that calls
+//   `assert_recipient_accredited` before moving title, or (b) have the dApp submit
+//   both proofs in one tx. Decision deferred to Phase 5 design.
+//
+// STATUS: skeleton, compiles with --skip-zk. No tests yet.
+// ============================================================================
+
+// Shared primitive from midnight-modules (do not reimplement).
+include "../../midnight-modules/modules/signed-credential/signed_credential";
+
+import CompactStandardLibrary;
+import SignedCredentials;
+
+// ---------------------------------------------------------------------------
+// THE KYCz ASSERTION THIS MODULE CONSUMES
+// Issued and Schnorr-signed by the KYCz IDP after its own checks. RWAz never
+// sees the passport. Field-typed for cheap hashing / identical off-chain encoding.
+// ---------------------------------------------------------------------------
+export struct KycAssertion {
+  subject_commitment: Field;  // H(holder key) — binds the assertion to a wallet key
+  nationality: Field;         // 3-byte ICAO code as Field (only field RWAz reads)
+  is_adult: Field;            // 1 = KYCz proved majority age
+  issued_at: Field;           // unix seconds, for freshness policy (TODO enforce)
+}
+
+// ---------------------------------------------------------------------------
+// STATE
+// ---------------------------------------------------------------------------
+
+// Issuer / registrar key commitment (same derivation as rwa_registry).
+export sealed ledger issuer_public_key: Bytes<32>;
+
+// The KYCz IDP whose assertions this asset accepts.
+export sealed ledger kycz_idp_public_key: JubjubPoint;
+
+// Jurisdiction policy: which nationalities may hold this asset.
+export ledger allowed_countries: Set<Field>;
+
+// Accredited holder set. Historic so proofs against recent roots stay valid
+// across inserts (Brick Towers pattern; see midnight-modules/merkle-membership).
+export ledger accredited_holders: HistoricMerkleTree<32, Bytes<32>>;
+
+// Regulator / issuer freeze list (ROADMAP Phase 5: AML denylist, supervision).
+export ledger frozen_holders: Set<Bytes<32>>;
+
+export ledger total_onboarded: Counter;
+
+// ---------------------------------------------------------------------------
+// WITNESSES
+// ---------------------------------------------------------------------------
+witness local_secret_key(): Bytes<32>;
+witness find_accreditation_path(pk: Bytes<32>): MerkleTreePath<32, Bytes<32>>;
+
+// ---------------------------------------------------------------------------
+// HELPERS
+// ---------------------------------------------------------------------------
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "midnight:mm:pk:"), sk]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+circuit check_caller_is_issuer(): [] {
+  assert(disclose(caller_public_key() == issuer_public_key), "Caller is not the issuer");
+}
+
+// ---------------------------------------------------------------------------
+// CONSTRUCTOR
+// ---------------------------------------------------------------------------
+constructor(issuer: Bytes<32>, kycz_idp: JubjubPoint) {
+  issuer_public_key = disclose(issuer);
+  kycz_idp_public_key = disclose(kycz_idp);
+}
+
+// ---------------------------------------------------------------------------
+// POLICY ADMIN (issuer only)
+// ---------------------------------------------------------------------------
+export circuit allow_country(code: Field): [] {
+  check_caller_is_issuer();
+  allowed_countries.insert(disclose(code));
+}
+
+export circuit disallow_country(code: Field): [] {
+  check_caller_is_issuer();
+  allowed_countries.remove(disclose(code));
+}
+
+export circuit freeze_holder(holder: Bytes<32>): [] {
+  check_caller_is_issuer();
+  frozen_holders.insert(disclose(holder));
+}
+
+export circuit unfreeze_holder(holder: Bytes<32>): [] {
+  check_caller_is_issuer();
+  frozen_holders.remove(disclose(holder));
+}
+
+// ---------------------------------------------------------------------------
+// ONBOARD: holder proves a valid KYCz assertion, joins the accredited set
+// ---------------------------------------------------------------------------
+// Discloses: that SOME holder joined, and the caller's key commitment (as the
+// leaf). Nationality and adulthood are checked in-circuit, never disclosed.
+export circuit onboard(assertion: SignedCredential<KycAssertion>): [] {
+  assert_signed_by<KycAssertion>(assertion, kycz_idp_public_key);
+  assert(assertion.credential.is_adult == 1, "KYCz assertion: holder is not an adult");
+  assert(
+    allowed_countries.member(disclose(assertion.credential.nationality)),
+    "Holder nationality not allowed for this asset"
+  );
+  // TODO: bind assertion.subject_commitment to caller_public_key() once the KYCz
+  //       IDP encoding of the commitment is fixed (Field vs Bytes<32> bridge).
+  accredited_holders.insert(disclose(caller_public_key()));
+  total_onboarded.increment(1);
+}
+
+// ---------------------------------------------------------------------------
+// THE GUARD a gated transfer calls before moving title
+// ---------------------------------------------------------------------------
+export circuit assert_recipient_accredited(recipient: Bytes<32>): [] {
+  const public_recipient = disclose(recipient);
+  assert(!frozen_holders.member(public_recipient), "Recipient is frozen");
+  const path = find_accreditation_path(public_recipient);
+  assert(
+    accredited_holders.checkRoot(merkleTreePathRoot<32, Bytes<32>>(disclose(path))),
+    "Recipient is not an accredited holder"
+  );
+}
+
+// Off-chain signer support for the KYCz IDP (hash consistency with the circuit).
+export pure circuit compute_challenge_for_assertion(r: JubjubPoint, pk: JubjubPoint, a: KycAssertion): Field {
+  return compute_challenge<KycAssertion>(r, pk, a);
+}
