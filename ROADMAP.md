@@ -87,3 +87,4 @@ registry and lifecycle status it reuses.
 ## Consumers to wire as phases land
 
 - `SilentLedger`, `equineProData`, `petProData`, `LegacyKey`, `safeHealthData`
+- `4DeFi.pro` real-estate title contract market (ideation, depends on Phase 2 + Phase 5): see `docs/REAL_ESTATE_TITLE_CONTRACT_MARKET.md`
